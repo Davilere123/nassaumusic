@@ -1,22 +1,15 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Animated,
-  useAnimatedValue,
+  View, Text, TouchableOpacity,
+  StyleSheet, Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAudio } from '../context/AudioContext';
 import { Ionicons } from '@expo/vector-icons';
 
 // ─────────────────────────────────────────────
-//  MiniPlayer
-//  Barra fixa no rodapé que aparece quando
-//  há uma música carregada. Toca/pausa e
-//  navega para a tela full do Player.
+//  MiniPlayer — barra fixa no rodapé
+//  Aparece automaticamente quando há música carregada
 // ─────────────────────────────────────────────
 
 export default function MiniPlayer() {
@@ -31,45 +24,51 @@ export default function MiniPlayer() {
   return (
     <TouchableOpacity
       style={styles.container}
-      activeOpacity={0.92}
+      activeOpacity={0.95}
       onPress={() => navigation.navigate('Player')}
     >
-      {/* Barra de progresso fina no topo do mini player */}
-      <View style={styles.progressBarBg}>
-        <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
+      {/* Barra de progresso no topo */}
+      <View style={styles.progressBg}>
+        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
       </View>
 
       <View style={styles.row}>
-        {/* Capa do álbum */}
+        {/* Capa */}
         {currentTrack.artwork ? (
           <Image source={{ uri: currentTrack.artwork }} style={styles.artwork} />
         ) : (
           <View style={[styles.artwork, styles.artworkFallback]}>
-            <Ionicons name="musical-note" size={20} color="#a78bfa" />
+            <Ionicons name="musical-note" size={18} color="#a78bfa" />
           </View>
         )}
 
-        {/* Info */}
+        {/* Título e artista */}
         <View style={styles.info}>
-          <Text style={styles.title} numberOfLines={1}>
-            {currentTrack.title}
-          </Text>
+          <Text style={styles.title} numberOfLines={1}>{currentTrack.title}</Text>
           <Text style={styles.artist} numberOfLines={1}>
             {currentTrack.artist ?? 'Artista desconhecido'}
           </Text>
         </View>
 
-        {/* Controles */}
-        <View style={styles.controls}>
-          <TouchableOpacity onPress={togglePlayPause} hitSlop={12} style={styles.btn}>
+        {/* Botões */}
+        <View style={styles.btns}>
+          <TouchableOpacity
+            onPress={(e) => { e.stopPropagation(); togglePlayPause(); }}
+            hitSlop={12}
+            style={styles.btn}
+          >
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
-              size={26}
+              size={24}
               color="#fff"
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={skipNext} hitSlop={12} style={styles.btn}>
-            <Ionicons name="play-skip-forward" size={22} color="#aaa" />
+          <TouchableOpacity
+            onPress={(e) => { e.stopPropagation(); skipNext(); }}
+            hitSlop={12}
+            style={styles.btn}
+          >
+            <Ionicons name="play-skip-forward" size={20} color="#888" />
           </TouchableOpacity>
         </View>
       </View>
@@ -79,18 +78,17 @@ export default function MiniPlayer() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#13131f',
     borderTopWidth: 1,
-    borderTopColor: '#2d2d4e',
-    paddingBottom: 4,
+    borderTopColor: '#1e1e35',
   },
-  progressBarBg: {
+  progressBg: {
     height: 2,
-    backgroundColor: '#2d2d4e',
+    backgroundColor: '#1e1e35',
   },
-  progressBarFill: {
+  progressFill: {
     height: 2,
-    backgroundColor: '#a78bfa',
+    backgroundColor: '#7c3aed',
   },
   row: {
     flexDirection: 'row',
@@ -100,35 +98,22 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   artwork: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
+    width: 42, height: 42, borderRadius: 10,
   },
   artworkFallback: {
-    backgroundColor: '#2d2d4e',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#1a0a2e',
+    alignItems: 'center', justifyContent: 'center',
   },
-  info: {
-    flex: 1,
-  },
+  info: { flex: 1 },
   title: {
-    color: '#fff',
-    fontSize: 14,
+    color: '#fff', fontSize: 13,
     fontWeight: '600',
-    letterSpacing: 0.2,
   },
   artist: {
-    color: '#888',
-    fontSize: 12,
-    marginTop: 2,
+    color: '#666', fontSize: 12, marginTop: 2,
   },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  btns: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
   },
-  btn: {
-    padding: 4,
-  },
+  btn: { padding: 6 },
 });
