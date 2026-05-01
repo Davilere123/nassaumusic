@@ -1,20 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { AudioProvider } from './context/AudioContext';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>NassauMusic</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AudioProvider>
+      <NavigationContainer>
+        {/* navegação do João Pedro vai aqui */}
+      </NavigationContainer>
+    </AudioProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
