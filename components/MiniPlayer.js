@@ -12,8 +12,12 @@ export default function MiniPlayer() {
     <View style={styles.container}>
       <Image source={{ uri: currentTrack.artwork }} style={styles.art} />
       <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={1}>{currentTrack.title}</Text>
-        <Text style={styles.artist}>{currentTrack.artist}</Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {currentTrack.title}
+          </Text>
+        <Text style={styles.artist}>
+          {currentTrack.artist}
+          </Text>
       </View>
       <TouchableOpacity 
           onPress={togglePlayPause}
