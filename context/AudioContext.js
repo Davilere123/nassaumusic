@@ -1,81 +1,63 @@
-import React, { createContext, useContext, useState, useRef, useCallback } from 'react';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Audio } from 'expo-av';
 
-const AudioContext = createContext(null);
+const AudioContext = createContext();
 
-export function AudioProvider({ children }) {
-  const [queue, setQueue] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [isLooping, setIsLooping] = useState(false);
-  const [isShuffle, setIsShuffle] = useState(false);
-  const skipNextRef = useRef(null);
+export const AudioProvider = ({ children }) => {
+  const [sound, setSound] = useState(null);
+  const [currentTrack, setCurrentTrack] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [positionMs, setPositionMs] = useState(0);
+  const [durationMs, setDurationMs] = useState(0);
 
-  const currentTrack = queue[currentIndex] ?? null;
+  // Função para carregar e tocar uma música
+  const playTrack = async (track) => {
+    try {
+      setIsLoading(true);
+      if (sound) await sound.unloadAsync();
 
-  const player = useAudioPlayer(
-    currentTrack ? { uri: currentTrack.uri } : null,
-    (p) => { if (p.didJustFinish && !isLooping) skipNextRef.current?.(); }
-  );
-  const status = useAudioPlayerStatus(player);
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: track.url },
+        { shouldPlay: true },
+        onPlaybackStatusUpdate
+      );
 
-  const play = useCallback((tracks, startIndex = 0) => {
-    if (tracks) { setQueue(tracks); setCurrentIndex(startIndex); }
-    else player?.play();
-  }, [player]);
+      setSound(newSound);
+      setCurrentTrack(track);
+      setIsPlaying(true);
+    } catch (e) {
+      console.log("Erro ao tocar:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const pause = useCallback(() => player?.pause(), [player]);
+  const onPlaybackStatusUpdate = (status) => {
+    if (status.isLoaded) {
+      setPositionMs(status.positionMillis);
+      setDurationMs(status.durationMillis);
+      setIsPlaying(status.isPlaying);
+    }
+  };
 
-  const togglePlayPause = useCallback(() => {
-    if (!player) return;
-    status?.playing ? player.pause() : player.play();
-  }, [player, status]);
-
-  const seekTo = useCallback((ms) => player?.seekTo(ms / 1000), [player]);
-
-  const skipNext = useCallback(() => {
-    setCurrentIndex((prev) => {
-      if (isShuffle) return Math.floor(Math.random() * queue.length);
-      return prev < queue.length - 1 ? prev + 1 : 0;
-    });
-  }, [isShuffle, queue.length]);
-
-  skipNextRef.current = skipNext;
-
-  const skipPrev = useCallback(() => {
-    const posMs = (status?.currentTime ?? 0) * 1000;
-    if (posMs > 3000) { seekTo(0); return; }
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : queue.length - 1));
-  }, [status, seekTo, queue.length]);
-
-  const toggleLoop = useCallback(() => {
-    const next = !isLooping;
-    setIsLooping(next);
-    if (player) player.loop = next;
-  }, [isLooping, player]);
-
-  const toggleShuffle = useCallback(() => setIsShuffle((s) => !s), []);
-
-  const positionMs = (status?.currentTime ?? 0) * 1000;
-  const durationMs = (status?.duration ?? 0) * 1000;
-  const isPlaying = status?.playing ?? false;
-  const isLoading = status?.isBuffering ?? false;
+  const togglePlayPause = async () => {
+    if (!sound) return;
+    if (isPlaying) {
+      await sound.pauseAsync();
+    } else {
+      await sound.playAsync();
+    }
+  };
 
   return (
-    <AudioContext.Provider value={{
-      currentTrack, queue, currentIndex,
-      isPlaying, isLoading, positionMs, durationMs,
-      isLooping, isShuffle,
-      play, pause, togglePlayPause, seekTo,
-      skipNext, skipPrev, toggleLoop, toggleShuffle,
-      setQueue, setCurrentIndex,
+    <AudioContext.Provider value={{ 
+      currentTrack, isPlaying, isLoading, positionMs, durationMs,
+      playTrack, togglePlayPause 
     }}>
       {children}
     </AudioContext.Provider>
   );
-}
+};
 
-export function useAudio() {
-  const ctx = useContext(AudioContext);
-  if (!ctx) throw new Error('useAudio dentro de <AudioProvider>');
-  return ctx;
-}
+export const useAudio = () => useContext(AudioContext);
