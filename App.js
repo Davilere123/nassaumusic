@@ -12,6 +12,8 @@ import MiniPlayer from './components/MiniPlayer';
 import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
 import LibraryScreen from './screens/LibraryScreen';
+import PlaylistScreen from './screens/PlaylistScreen';
+import FriendProfileScreen from './screens/FriendProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
