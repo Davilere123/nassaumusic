@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Dimensions } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 export default function FriendProfileScreen() {
@@ -25,9 +25,9 @@ export default function FriendProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#121212' },
-  cover: { width: '100%', height: 200, opacity: 0.5 },
+  cover: { width: Dimensions.get('window').width, height: 200, opacity: 0.5 },
   content: { alignItems: 'center', marginTop: -60 },
-  avatar: { width: 120, height: 120, borderRadius: 60, borderWidht: 4, borderColor: '#121212' },
+  avatar: { width: 120, height: 120, borderRadius: 60, borderWidth: 4, borderColor: '#121212' },
   name: { color: '#fff', fontSize: 28, fontWeight: 'bold', marginTop: 15 },
   sub: { color: '#aaa', fontSize: 14, marginTop: 5 },
   sectionTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', marginTop: 30, alignSelf: 'flex-start', marginLeft: 20 },

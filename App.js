@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Importação do Contexto e Componentes
 import { AudioProvider } from './context/AudioContext';
@@ -19,6 +20,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
+    <SafeAreaProvider>
     <AudioProvider>
       <NavigationContainer>
         {/* Usamos uma View envolta de tudo para o MiniPlayer não "sumir" sob as abas */}
@@ -61,6 +63,7 @@ export default function App() {
         </View>
       </NavigationContainer>
     </AudioProvider>
+    </SafeAreaProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 // screens/PlayerScreen.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useAudio } from '../context/AudioContext';
@@ -17,7 +17,7 @@ export default function PlayerScreen() {
       <Text style={styles.artist}>{currentTrack.artist}</Text>
       
       <Slider
-        style={{width: '100%', height: 40}}
+        style={{width: Dimensions.get('window').width - 40, height: 40}}
         minimumValue={0}
         maximumValue={durationMs || 1}
         value={positionMs}

@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     height: 60, backgroundColor: '#282828',
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 12, marginHorizontal: 8,
-    borderRadius: 8, bottom: 5, position: 'absolute', width: '96%',
+    borderRadius: 8, bottom: 5, position: 'absolute', left: 8, right: 8,
   },
   art: { width: 40, height: 40, borderRadius: 4 },
   info: { flex: 1, marginLeft: 12 },

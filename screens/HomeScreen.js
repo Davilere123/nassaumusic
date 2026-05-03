@@ -1,6 +1,7 @@
 // screens/HomeScreen.js
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { friendsActivity, recommendedAlbums } from '../mockData';
 import { useAudio } from '../context/AudioContext';
