@@ -34,7 +34,7 @@ export default function HomeScreen({ navigation }) { // Adicionei 'navigation' a
             renderItem={({ item }) => (
               <TouchableOpacity 
                 style={styles.friendCard}
-                onPress={() => navigation.navigate('PlaylistScreen', { album: item })}
+                onPress={() => navigation.navigate('FriendProfileScreen', { friend: item })}
               >
                 <Image source={{ uri: item.avatar }} style={styles.friendAvatar} />
                 <View style={styles.friendMusicIcon}><Ionicons name="musical-notes" size={12} color="#fff" /></View>
