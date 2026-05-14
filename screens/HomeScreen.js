@@ -19,9 +19,6 @@ export default function HomeScreen({ navigation }) { // Adicionei 'navigation' a
         {/* Header existente */}
         <View style={styles.header}>
           <Text style={styles.greeting}>Bem vindo!</Text>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconBtn}><Ionicons name="settings-outline" size={24} color="#fff" /></TouchableOpacity>
-          </View>
         </View>
 
         {/* Atividade dos Amigos */}
