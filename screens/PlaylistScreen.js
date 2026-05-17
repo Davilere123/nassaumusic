@@ -2,11 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useAudio } from '../context/AudioContext';
 import { tracks } from '../mockData'; 
-import { Ionicons } from '@expo/vector-icons'; // Importando os ícones
+import { Ionicons } from '@expo/vector-icons'; 
 
-export default function PlaylistScreen({ route, navigation }) { // Adicionado 'navigation' aqui
+export default function PlaylistScreen({ route, navigation }) { 
   const { album } = route.params; 
   const { playTrack } = useAudio();
+
+  // CORREÇÃO: Enviando a track clicada E a lista completa (tracks) para o contexto
+  const handlePlay = (item) => {
+    playTrack(item, tracks); // Agora o Contexto sabe a fila de reprodução!
+    navigation.navigate('PlayerScreen'); 
+  };
 
   return (
     <View style={styles.container}>
@@ -30,7 +36,7 @@ export default function PlaylistScreen({ route, navigation }) { // Adicionado 'n
         data={tracks} 
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.trackItem} onPress={() => playTrack(item)}>
+          <TouchableOpacity style={styles.trackItem} onPress={() => handlePlay(item)}>
             <Text style={styles.trackTitle}>{item.title}</Text>
             <Text style={styles.trackArtist}>{item.artist}</Text>
           </TouchableOpacity>
@@ -56,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  header: { alignItems: 'center', marginBottom: 30, marginTop: 110 }, // Espaço para não bater no botão
+  header: { alignItems: 'center', marginBottom: 30, marginTop: 110 }, 
   cover: { width: 200, height: 200, borderRadius: 8 },
   title: { color: '#fff', fontSize: 24, fontWeight: 'bold', marginTop: 15, textAlign: 'center' },
   sub: { color: '#aaa', fontSize: 14 },

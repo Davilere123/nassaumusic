@@ -3,22 +3,33 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { friendsActivity, recommendedAlbums } from '../mockData';
+import { friendsActivity, recommendedAlbums, tracks } from '../mockData';
 import { useAudio } from '../context/AudioContext';
-import { tracks } from '../mockData';
 
-export default function HomeScreen({ navigation }) { // Adicionei 'navigation' aqui para o futuro
-  
-  // 1. A LÓGICA DO HOOK FICA AQUI (Antes do return)
+export default function HomeScreen({ navigation }) { 
   const { playTrack } = useAudio();
+
+  // Função para tocar e abrir a tela cheia
+  const handlePlay = (item) => {
+    playTrack(item); // Começa a música
+    navigation.navigate('PlayerScreen'); // Abre o player
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         
-        {/* Header existente */}
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>Bem vindo!</Text>
+          <View style={styles.headerIcons}>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Ionicons name="notifications-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Ionicons name="settings-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Atividade dos Amigos */}
@@ -42,14 +53,14 @@ export default function HomeScreen({ navigation }) { // Adicionei 'navigation' a
           />
         </View>
 
-        {/* 2. NOVA SEÇÃO: MÚSICAS PARA VOCÊ (Inserida entre amigos e álbuns) */}
+        {/* Músicas para você */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Músicas para você</Text>
           {tracks.map((item) => (
             <TouchableOpacity 
               key={item.id} 
               style={styles.trackItem} 
-              onPress={() => playTrack(item)} 
+              onPress={() => handlePlay(item)} // CHAMA A FUNÇÃO CORRIGIDA AQUI
             >
               <Image source={{ uri: item.artwork }} style={styles.trackArt} />
               <View style={styles.trackInfo}>
@@ -61,7 +72,7 @@ export default function HomeScreen({ navigation }) { // Adicionei 'navigation' a
           ))}
         </View>
 
-        {/* Recomendações (Álbuns) */}
+        {/* Feito para você (Seus Álbuns/Playlists) */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Feito para você</Text>
           <FlatList
@@ -69,7 +80,10 @@ export default function HomeScreen({ navigation }) { // Adicionei 'navigation' a
             horizontal
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.albumCard}>
+              <TouchableOpacity 
+                style={styles.albumCard}
+                onPress={() => navigation.navigate('PlaylistScreen', { album: item })}
+              >
                 <Image source={{ uri: item.image }} style={styles.albumImage} />
                 <Text style={styles.albumTitle}>{item.title}</Text>
               </TouchableOpacity>
@@ -77,8 +91,7 @@ export default function HomeScreen({ navigation }) { // Adicionei 'navigation' a
           />
         </View>
 
-        {/* Espaçamento final para o MiniPlayer não cobrir o conteúdo */}
-        <View style={{ height: 100 }} />
+        <View style={{ height: 110 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -97,19 +110,11 @@ const styles = StyleSheet.create({
   friendMusicIcon: { position: 'absolute', right: 20, bottom: 40, backgroundColor: '#9333ea', borderRadius: 10, padding: 4 },
   friendName: { color: '#fff', fontSize: 12, fontWeight: 'bold', marginTop: 8 },
   friendListening: { color: '#aaa', fontSize: 10, textAlign: 'center' },
-  
-  // ESTILOS DAS MÚSICAS (Adicione estes!)
-  trackItem: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 16, 
-    paddingRight: 16 
-  },
+  trackItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 16, paddingRight: 16 },
   trackArt: { width: 50, height: 50, borderRadius: 4 },
   trackInfo: { flex: 1, marginLeft: 12 },
   trackTitle: { color: '#fff', fontSize: 14, fontWeight: '600' },
   trackArtist: { color: '#aaa', fontSize: 12 },
-
   albumCard: { marginRight: 16, width: 140 },
   albumImage: { width: 140, height: 140, borderRadius: 8 },
   albumTitle: { color: '#fff', marginTop: 8, fontSize: 13, fontWeight: '600' },

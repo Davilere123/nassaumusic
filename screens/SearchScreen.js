@@ -1,27 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput } from 'react-native';
-
-const CATEGORIES = [
-  { id: '1', title: 'Rock', color: '#E8115B' },
-  { id: '2', title: 'Pop', color: '#148A08' },
-  { id: '3', title: 'Hip-Hop', color: '#BC5900' },
-  { id: '4', title: 'Indie', color: '#777777' },
-];
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { recommendedAlbums } from '../mockData'; // Importa as playlists reais
 
 export default function SearchScreen() {
+  const navigation = useNavigation();
+
+  // Cores para os cards das playlists
+  const colors = ['#E8115B', '#148A08', '#BC5900', '#777777'];
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Buscar</Text>
       <TextInput style={styles.searchInput} placeholder="O que você quer ouvir?" placeholderTextColor="#000" />
       
-      <Text style={styles.sub}>Navegar por todas as seções</Text>
+      <Text style={styles.sub}>Playlists para você</Text>
       <FlatList
-        data={CATEGORIES}
+        data={recommendedAlbums} // Usa as playlists do mockData (Rock Garagem, etc.)
         numColumns={2}
-        renderItem={({ item }) => (
-          <View style={[styles.card, { backgroundColor: item.color }]}>
+        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => (
+          <TouchableOpacity 
+            style={[styles.card, { backgroundColor: colors[index % colors.length] }]}
+            onPress={() => navigation.navigate('PlaylistScreen', { album: item })}
+          >
             <Text style={styles.cardText}>{item.title}</Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack'; // Importação do Stack
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -17,11 +17,12 @@ import SearchScreen from './screens/SearchScreen';
 import LibraryScreen from './screens/LibraryScreen';
 import PlaylistScreen from './screens/PlaylistScreen';
 import FriendProfileScreen from './screens/FriendProfileScreen';
+import PlayerScreen from './screens/PlayerScreen';
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator(); // Inicializando o Stack
+const Stack = createNativeStackNavigator();
 
-// 1. Isolamos o Tab.Navigator em uma função separada
+// 1. Menu de abas inferiores (Início, Buscar, Biblioteca)
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -30,8 +31,9 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: '#121212',
           borderTopWidth: 0,
-          height: 60,
-          paddingBottom: 8,
+          height: 100,
+          paddingBottom: 15,
+          paddingTop: 10,
         },
         tabBarActiveTintColor: '#9333ea', 
         tabBarInactiveTintColor: '#b3b3b3',
@@ -51,7 +53,37 @@ function MainTabs() {
   );
 }
 
-// 2. O App agora usa o Stack para gerenciar as rotas
+// CORREÇÃO ESSENCIAL: Esse componente garante que o MiniPlayer consuma o contexto de navegação sem quebrar o app
+function AppNavigator() {
+  return (
+    <View style={styles.container}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* 1. Abas Principais */}
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+        
+        {/* 2. Tela de Playlist */}
+        <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
+        
+        {/* 3. Perfil do Amigo */}
+        <Stack.Screen name="FriendProfileScreen" component={FriendProfileScreen} />
+        
+        {/* 4. Player Grande (Flutuando no topo do Stack para deslizar e cobrir as telas) */}
+        <Stack.Screen 
+          name="PlayerScreen" 
+          component={PlayerScreen} 
+          options={{ 
+            presentation: 'transparentModal', 
+            animation: 'slide_from_bottom'
+          }}
+        />
+      </Stack.Navigator>
+
+      {/* O MiniPlayer fica aqui para rodar na Home e Playlist sem travar a inicialização */}
+      <MiniPlayer />
+    </View>
+  );
+}
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -63,22 +95,8 @@ export default function App() {
           <AuthScreen onLogin={() => setIsLoggedIn(true)} />
         ) : (
           <NavigationContainer>
-            <View style={styles.container}>
-              
-              {/* O Stack.Navigator é o novo "chefe" */}
-              <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {/* A tela principal é o pacote com as 3 abas */}
-                <Stack.Screen name="MainTabs" component={MainTabs} />
-                
-                {/* As outras telas agora estão registradas aqui! */}
-                <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
-                <Stack.Screen name="FriendProfileScreen" component={FriendProfileScreen} />
-              </Stack.Navigator>
-
-              {/* MiniPlayer fica fora do Stack para aparecer por cima de tudo */}
-              <MiniPlayer />
-              
-            </View>
+            {/* Renderiza a estrutura segura contendo o Stack e o MiniPlayer flutuante */}
+            <AppNavigator />
           </NavigationContainer>
         )}
 
