@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Importação do Contexto e Componentes
+import { DatabaseProvider } from './context/DatabaseContext';
 import { AudioProvider } from './context/AudioContext';
 import MiniPlayer from './components/MiniPlayer';
 
@@ -89,18 +90,20 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <AudioProvider>
-        
-        {!isLoggedIn ? (
-          <AuthScreen onLogin={() => setIsLoggedIn(true)} />
-        ) : (
-          <NavigationContainer>
-            {/* Renderiza a estrutura segura contendo o Stack e o MiniPlayer flutuante */}
-            <AppNavigator />
-          </NavigationContainer>
-        )}
+      <DatabaseProvider>
+        <AudioProvider>
+          
+          {!isLoggedIn ? (
+            <AuthScreen onLogin={() => setIsLoggedIn(true)} />
+          ) : (
+            <NavigationContainer>
+              {/* Renderiza a estrutura segura contendo o Stack e o MiniPlayer flutuante */}
+              <AppNavigator />
+            </NavigationContainer>
+          )}
 
-      </AudioProvider>
+        </AudioProvider>
+      </DatabaseProvider>
     </SafeAreaProvider>
   );
 }
