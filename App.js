@@ -86,7 +86,7 @@ function AppNavigator() {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Alterado temporariamente para pular o login quebrado
 
   return (
     <SafeAreaProvider>

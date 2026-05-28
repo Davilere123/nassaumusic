@@ -52,13 +52,13 @@ export default function MiniPlayer() {
       activeOpacity={0.9}
       onPress={() => navigation.navigate('PlayerScreen')} 
     >
-      <Image source={{ uri: currentTrack.artwork }} style={styles.art} />
+      <Image source={{ uri: currentTrack.capa || currentTrack.artwork }} style={styles.art} />
       <View style={styles.info}>
         <Text style={styles.title} numberOfLines={1}>
-          {currentTrack.title}
+          {currentTrack.titulo || currentTrack.title}
         </Text>
         <Text style={styles.artist} numberOfLines={1}>
-          {currentTrack.artist}
+          {currentTrack.artista || currentTrack.artist}
         </Text>
         {/* NOVO: Mostra apenas os minutos atuais rodando na música */}
         <Text style={styles.timeText}>

@@ -19,6 +19,17 @@ async function initializeDatabase(db) {
       );
     `);
 
+    //Tabela para guardar as músicas
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS trilhas (
+      id VARCHAR(255) PRIMARY KEY,
+      titulo VARCHAR(255) NULL,
+      artista VARCHAR(255) NULL,
+      capa VARCHAR(255) NULL,
+      url VARCHAR(255) NOT NULL
+      );
+      `);
+
     // Inserimos um registro de teste se ele já não existir
     await db.runAsync(
       'INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?);',
@@ -40,8 +51,8 @@ async function initializeDatabase(db) {
  */
 export const DatabaseProvider = ({ children }) => {
   return (
-    <SQLiteProvider 
-      databaseName="nassaumusic.db" 
+    <SQLiteProvider
+      databaseName="nassaumusic.db"
       onInit={initializeDatabase}
     >
       {children}
