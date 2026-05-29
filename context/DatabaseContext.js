@@ -64,6 +64,7 @@ export const DatabaseProvider = ({ children }) => {
     <SQLiteProvider
       databaseName="nassaumusic.db"
       onInit={initializeDatabase}
+      useSuspense={false}
     >
       {children}
     </SQLiteProvider>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { 
+  Alert,
+  Keyboard,
   View, 
   Text, 
   TextInput, 
@@ -10,22 +12,72 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { Ionicons } from '@expo/vector-icons';
+import { useDatabase } from '../context/DatabaseContext';
 
 export default function AuthScreen({ onLogin }) {
   const [viewMode, setViewMode] = useState('welcome'); 
   const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
+  const db = useDatabase();
 
-  const handleAuth = () => {
+  const handleAuth = async () => {
+    // 1. Fechar o teclado para evitar deadlocks de desmontagem da UI
+    Keyboard.dismiss();
+
     if (nome.trim() === '' || senha.trim() === '') {
-      alert('Por favor, preencha nome e senha!');
+      Alert.alert('Erro', 'Por favor, preencha nome e senha!');
       return;
     }
     if (senha.length < 8) {
-      alert('A senha precisa de 8 caracteres.');
+      Alert.alert('Erro', 'A senha precisa ter no mínimo 8 caracteres.');
       return;
     }
-    onLogin();
+
+    try {
+      if (viewMode === 'register') {
+        const existingUser = await db.getFirstAsync('SELECT * FROM usuario WHERE Nome = ?', nome.trim());
+        
+        if (existingUser) {
+          Alert.alert('Erro', 'Este nome já está em uso. Tente outro ou faça login.');
+          return;
+        }
+
+        const newId = Date.now().toString(); 
+        // Cria um e-mail fictício usando o nome sem espaços para satisfazer a regra UNIQUE do DB
+        const dummyEmail = `${nome.trim().replace(/\s/g, '').toLowerCase()}${newId}@nassaumusic.app`;
+
+        // Passando parâmetros separados em vez de array para compatibilidade máxima com expo-sqlite
+        await db.runAsync(
+          'INSERT INTO usuario (id, Nome, Email, Senha) VALUES (?, ?, ?, ?)',
+          newId, nome.trim(), dummyEmail, senha
+        );
+        
+        Alert.alert('Sucesso', 'Conta criada com sucesso!', [
+          { 
+            text: 'OK', 
+            onPress: () => {
+              // Delay seguro para evitar travamento da animação da transição de telas
+              setTimeout(() => onLogin(), 150);
+            } 
+          }
+        ]);
+      } else if (viewMode === 'login') {
+        const user = await db.getFirstAsync(
+          'SELECT * FROM usuario WHERE Nome = ? AND Senha = ?',
+          nome.trim(), senha
+        );
+        
+        if (user) {
+          // Delay seguro
+          setTimeout(() => onLogin(), 150);
+        } else {
+          Alert.alert('Erro', 'Nome ou senha incorretos.');
+        }
+      }
+    } catch (error) {
+      console.error('[AuthScreen] Erro no banco de dados:', error);
+      Alert.alert('Erro', 'Ocorreu um problema ao conectar com o banco de dados.');
+    }
   };
 
   if (viewMode === 'welcome') {

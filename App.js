@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Importação do Contexto e Componentes
-import { DatabaseProvider } from './context/DatabaseContext';
 import { AudioProvider } from './context/AudioContext';
 import MiniPlayer from './components/MiniPlayer';
 
@@ -36,7 +35,7 @@ function MainTabs() {
           paddingBottom: 15,
           paddingTop: 10,
         },
-        tabBarActiveTintColor: '#9333ea', 
+        tabBarActiveTintColor: '#9333ea',
         tabBarInactiveTintColor: '#b3b3b3',
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = 'musical-notes';
@@ -54,56 +53,56 @@ function MainTabs() {
   );
 }
 
-// CORREÇÃO ESSENCIAL: Esse componente garante que o MiniPlayer consuma o contexto de navegação sem quebrar o app
-function AppNavigator() {
+// CORREÇÃO ESSENCIAL: AppNavigator agora gerencia o fluxo de Autenticação nativamente
+function AppNavigator({ isLoggedIn, onLogin }) {
   return (
     <View style={styles.container}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* 1. Abas Principais */}
-        <Stack.Screen name="MainTabs" component={MainTabs} />
-        
+        {!isLoggedIn ? (
+          // Tela de Autenticação gerenciada pelo React Navigation para evitar travamentos de desmontagem
+          <Stack.Screen name="Auth">
+            {(props) => <AuthScreen {...props} onLogin={onLogin} />}
+          </Stack.Screen>
+        ) : (
+          <>
+            {/* 1. Abas Principais */}
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+
         {/* 2. Tela de Playlist */}
         <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
-        
+
         {/* 3. Perfil do Amigo */}
         <Stack.Screen name="FriendProfileScreen" component={FriendProfileScreen} />
-        
+
         {/* 4. Player Grande (Flutuando no topo do Stack para deslizar e cobrir as telas) */}
-        <Stack.Screen 
-          name="PlayerScreen" 
-          component={PlayerScreen} 
-          options={{ 
-            presentation: 'transparentModal', 
+        <Stack.Screen
+          name="PlayerScreen"
+          component={PlayerScreen}
+          options={{
+            presentation: 'transparentModal',
             animation: 'slide_from_bottom'
           }}
         />
+          </>
+        )}
       </Stack.Navigator>
 
-      {/* O MiniPlayer fica aqui para rodar na Home e Playlist sem travar a inicialização */}
-      <MiniPlayer />
+      {/* O MiniPlayer SÓ aparece se estiver logado para não quebrar a tela de Auth */}
+      {isLoggedIn && <MiniPlayer />}
     </View>
   );
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Alterado temporariamente para pular o login quebrado
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Alterado temporariamente para pular o login quebrado
 
   return (
     <SafeAreaProvider>
-      <DatabaseProvider>
-        <AudioProvider>
-          
-          {!isLoggedIn ? (
-            <AuthScreen onLogin={() => setIsLoggedIn(true)} />
-          ) : (
-            <NavigationContainer>
-              {/* Renderiza a estrutura segura contendo o Stack e o MiniPlayer flutuante */}
-              <AppNavigator />
-            </NavigationContainer>
-          )}
-
-        </AudioProvider>
-      </DatabaseProvider>
+      <AudioProvider>
+        <NavigationContainer>
+          <AppNavigator isLoggedIn={isLoggedIn} onLogin={() => setIsLoggedIn(true)} />
+        </NavigationContainer>
+      </AudioProvider>
     </SafeAreaProvider>
   );
 }
