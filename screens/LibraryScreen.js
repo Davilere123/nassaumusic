@@ -5,6 +5,7 @@ import { useAudio } from '../context/AudioContext';
 import * as DocumentPicker from 'expo-document-picker'; //Importa a biblioteca que permite ao usuário selecionar as músicas
 import { File, Paths } from 'expo-file-system'; // Nova API de arquivos do Expo 54
 import { useDatabase } from '../context/DatabaseContext'; // Importa a biblioteca para acessar o banco de dados
+import { Ionicons } from '@expo/vector-icons';
 
 export default function LibraryScreen() {
 
@@ -30,6 +31,44 @@ export default function LibraryScreen() {
     carregarMusicas();
   }, []);
 
+  // Função para remover a música do banco de dados
+  const removerMusica = (id) => {
+    Alert.alert(
+      "Remover Música",
+      "Tem certeza que deseja remover esta música da biblioteca?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Remover",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // 1. Busca a URL da música para deletar o arquivo físico (limpar espaço)
+              const musica = await db.getFirstAsync('SELECT url FROM trilhas WHERE id = ?', id);
+              if (musica && musica.url) {
+                try {
+                  const arquivo = new File(musica.url);
+                  if (arquivo.exists) {
+                    arquivo.delete(); // Deleta o arquivo físico usando a nova API
+                  }
+                } catch (err) {
+                  console.log('Erro ao deletar o arquivo físico:', err);
+                }
+              }
+
+              // 2. Remove a música do banco de dados
+              await db.runAsync('DELETE FROM trilhas WHERE id = ?', id);
+              carregarMusicas(); // Recarrega a lista após remover
+            } catch (error) {
+              console.log('Erro ao remover música: ', error);
+              Alert.alert("Erro", "Não foi possível remover a música.");
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const pickFolder = async () => {
     try {
       //Pede permissão ao usuário, abrindo a tela de seleção de arquivos
@@ -46,17 +85,17 @@ export default function LibraryScreen() {
 
         for (const file of audioFiles) { //Percorre as músicas que o usuário selecionou
 
-          // Usa a nova API de arquivos do Expo 54
+          // Cria um id aleatório para a música
+          const uniqueId = 'trilha_' + Date.now() + Math.floor(Math.random() * 1000);
+
+          // Usa a nova API de arquivos do Expo 54 com um nome único para não dar erro se já existir
           const arquivoTemporario = new File(file.uri);
-          const arquivoPermanente = new File(Paths.document, file.name);
+          const arquivoPermanente = new File(Paths.document, `${uniqueId}_${file.name}`);
 
           // Copia de forma instantânea para a pasta segura
           arquivoTemporario.copy(arquivoPermanente);
 
           const permanentUri = arquivoPermanente.uri;
-
-          //Cria um id aleatório para a música
-          const uniqueId = 'trilha_' + Date.now() + Math.floor(Math.random() * 1000);
 
           //Insere no banco de dados
           await db.runAsync(
@@ -105,16 +144,22 @@ export default function LibraryScreen() {
         data={musicas} // Agora as músicas aparecem aqui
 
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={() => playTrack(item)}>
+          <View style={styles.itemContainer}>
+            <TouchableOpacity style={styles.item} onPress={() => playTrack(item)}>
 
-            <Image source={{ uri: item.capa }} style={styles.art} />
+              <Image source={{ uri: item.capa }} style={styles.art} />
 
-            <View>
-              <Text style={styles.title}>{item.titulo}</Text>
-              <Text style={styles.artist}>{item.artista}</Text>
-            </View>
+              <View style={styles.textContainer}>
+                <Text style={styles.title} numberOfLines={1}>{item.titulo}</Text>
+                <Text style={styles.artist} numberOfLines={1}>{item.artista}</Text>
+              </View>
 
-          </TouchableOpacity>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.deleteButton} onPress={() => removerMusica(item.id)}>
+              <Ionicons name="trash-outline" size={24} color="#ff4444" />
+            </TouchableOpacity>
+          </View>
         )}
       />
 
@@ -127,13 +172,19 @@ const styles = StyleSheet.create({
 
   header: { color: '#fff', fontSize: 24, fontWeight: 'bold', marginBottom: 20, marginTop: 40 },
 
-  item: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  itemContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, justifyContent: 'space-between' },
+
+  item: { flexDirection: 'row', alignItems: 'center', flex: 1 },
 
   art: { width: 50, height: 50, borderRadius: 4, marginRight: 15 },
+
+  textContainer: { flex: 1, paddingRight: 10 },
 
   title: { color: '#fff', fontSize: 16, fontWeight: '600' },
 
   artist: { color: '#aaa', fontSize: 13 },
+
+  deleteButton: { padding: 10 },
 
   button: {
     backgroundColor: '#9333ea',
