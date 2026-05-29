@@ -29,6 +29,16 @@ async function initializeDatabase(db) {
       url VARCHAR(255) NOT NULL
       );
       `);
+    
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS usuario(
+      id VARCHAR(255) PRIMARY KEY,
+      Nome VARCHAR(80) NOT NULL,
+      Email VARCHAR(255) UNIQUE NOT NULL,
+      Senha VARCHAR(255) NOT NULL,
+      FotoDePerfil VARCHAR(255) NULL
+      );
+    `);
 
     // Inserimos um registro de teste se ele já não existir
     await db.runAsync(
@@ -68,12 +78,4 @@ export const useDatabase = () => {
   return useSQLiteContext();
 };
 
-    await db.execAsync(`
-      CREATE TABLE IF NO EXISTS usuario(
-      id VARCHAR(255) PRIMARY KEY,
-      Nome VARCHAR(80) NOT NULL,
-      Email VARCHAR(255) UNIQUE NOT NULL,
-      Senha VARCHAR(255) NOT NULL,
-      FotoDePerfil VARCHAR(255) NOT NULL
-      );
-        `);
+    
