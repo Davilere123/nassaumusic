@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Alert } from
 import { tracks } from '../mockData';
 import { useAudio } from '../context/AudioContext';
 import * as DocumentPicker from 'expo-document-picker'; //Importa a biblioteca que permite ao usuário selecionar as músicas
-import { File, Paths } from 'expo-file-system'; // Nova API de arquivos do Expo 54
+import { File, Paths } from 'expo-file-system'; // Importa a biblioteca que permite guardar as músicas dentro do app
 import { useDatabase } from '../context/DatabaseContext'; // Importa a biblioteca para acessar o banco de dados
 import { Ionicons } from '@expo/vector-icons';
 

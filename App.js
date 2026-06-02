@@ -53,7 +53,7 @@ function MainTabs() {
   );
 }
 
-// CORREÇÃO ESSENCIAL: AppNavigator agora gerencia o fluxo de Autenticação nativamente
+// AppNavigator agora gerencia o fluxo de Autenticação nativamente
 function AppNavigator({ isLoggedIn, onLogin }) {
   return (
     <View style={styles.container}>
@@ -68,21 +68,21 @@ function AppNavigator({ isLoggedIn, onLogin }) {
             {/* 1. Abas Principais */}
             <Stack.Screen name="MainTabs" component={MainTabs} />
 
-        {/* 2. Tela de Playlist */}
-        <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
+            {/* 2. Tela de Playlist */}
+            <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} />
 
-        {/* 3. Perfil do Amigo */}
-        <Stack.Screen name="FriendProfileScreen" component={FriendProfileScreen} />
+            {/* 3. Perfil do Amigo */}
+            <Stack.Screen name="FriendProfileScreen" component={FriendProfileScreen} />
 
-        {/* 4. Player Grande (Flutuando no topo do Stack para deslizar e cobrir as telas) */}
-        <Stack.Screen
-          name="PlayerScreen"
-          component={PlayerScreen}
-          options={{
-            presentation: 'transparentModal',
-            animation: 'slide_from_bottom'
-          }}
-        />
+            {/* 4. Player Grande (Flutuando no topo do Stack para deslizar e cobrir as telas) */}
+            <Stack.Screen
+              name="PlayerScreen"
+              component={PlayerScreen}
+              options={{
+                presentation: 'transparentModal',
+                animation: 'slide_from_bottom'
+              }}
+            />
           </>
         )}
       </Stack.Navigator>
@@ -94,7 +94,7 @@ function AppNavigator({ isLoggedIn, onLogin }) {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Alterado temporariamente para pular o login quebrado
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <SafeAreaProvider>

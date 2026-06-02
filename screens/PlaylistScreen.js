@@ -1,25 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useAudio } from '../context/AudioContext';
-import { tracks } from '../mockData'; 
-import { Ionicons } from '@expo/vector-icons'; 
+import { tracks } from '../mockData';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function PlaylistScreen({ route, navigation }) { 
-  const { album } = route.params; 
+export default function PlaylistScreen({ route, navigation }) {
+  const { album } = route.params;
   const { playTrack } = useAudio();
 
-  // CORREÇÃO: Enviando a track clicada E a lista completa (tracks) para o contexto
+  // Enviando a track clicada E a lista completa (tracks) para o contexto
   const handlePlay = (item) => {
     playTrack(item, tracks); // Agora o Contexto sabe a fila de reprodução!
-    navigation.navigate('PlayerScreen'); 
+    navigation.navigate('PlayerScreen');
   };
 
   return (
     <View style={styles.container}>
-      
+
       {/* Botão de Voltar */}
-      <TouchableOpacity 
-        style={styles.backButton} 
+      <TouchableOpacity
+        style={styles.backButton}
         onPress={() => navigation.goBack()}
         activeOpacity={0.7}
       >
@@ -33,7 +33,7 @@ export default function PlaylistScreen({ route, navigation }) {
       </View>
 
       <FlatList
-        data={tracks} 
+        data={tracks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.trackItem} onPress={() => handlePlay(item)}>
@@ -48,13 +48,13 @@ export default function PlaylistScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#121212', paddingHorizontal: 20 },
-  
-  backButton: { 
-    position: 'absolute', 
-    top: 50, 
-    left: 20, 
+
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
     zIndex: 10,
-    backgroundColor: '#9333ea', 
+    backgroundColor: '#9333ea',
     width: 45,
     height: 45,
     borderRadius: 22.5,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  header: { alignItems: 'center', marginBottom: 30, marginTop: 110 }, 
+  header: { alignItems: 'center', marginBottom: 30, marginTop: 110 },
   cover: { width: 200, height: 200, borderRadius: 8 },
   title: { color: '#fff', fontSize: 24, fontWeight: 'bold', marginTop: 15, textAlign: 'center' },
   sub: { color: '#aaa', fontSize: 14 },
