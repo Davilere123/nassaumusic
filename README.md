@@ -1,8 +1,9 @@
+![Logo do NassauMusic](docs/logoreadme.png)
 # NassauMusic
   
-Este é um projeto de **player de música simples** para o trabalho da matéria de **Mobile Coding**, ministrada pela professora Noemi.  
+Este é um projeto de **player de música simples** para o trabalho da matéria de **Mobile Coding**, ministrada pela professora Noemi Honorato.  
 
-Ele foi desenvolvido utilizando React Native + Expo.
+Ele foi desenvolvido utilizando **React Native + Expo**.
 
 ## Principais ferramentas
 - node.js
@@ -17,7 +18,7 @@ Ele foi desenvolvido utilizando React Native + Expo.
 ## Como executar
 ### Baixando e instalando o .apk
 
-- Acesse a página de **Releases** do projeto, baixe o arquivo **.apk** e instale
+- Acesse a página de [**Releases**](https://github.com/Davilere123/nassaumusic/releases "Acessar Releases do NassauMusic") do projeto, baixe o arquivo **.apk** e instale
 
 ### Utilizando o Expo Go
 - Antes de tudo, instale o node.js com npm e instale o **Expo** e as bibliotecas **expo-av** e **expo-sqlite**. Instale também o aplicativo Expo Go no seu celular
