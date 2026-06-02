@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Importação do Contexto e Componentes
@@ -95,6 +96,15 @@ function AppNavigator({ isLoggedIn, onLogin }) {
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [fontsLoaded] = useFonts(Ionicons.font);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' }}>
+        <ActivityIndicator size="large" color="#9333ea" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>
