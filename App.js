@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -96,9 +96,23 @@ function AppNavigator({ isLoggedIn, onLogin }) {
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [fontsLoaded] = useFonts(Ionicons.font);
+  const [fontTimeout, setFontTimeout] = useState(false);
+  
+  const [fontsLoaded] = useFonts({
+    Ionicons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+  });
 
-  if (!fontsLoaded) {
+  // Timeout de segurança (fallback): Se a fonte não carregar em 3 segundos, libera o acesso ao app
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!fontsLoaded) {
+        setFontTimeout(true);
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded && !fontTimeout) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' }}>
         <ActivityIndicator size="large" color="#9333ea" />
